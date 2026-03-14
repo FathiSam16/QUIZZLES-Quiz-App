@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Challenge - QUIZZLES</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* Quiz Page Specific Styles */
+        .quiz-container {
+            background: white;
+            border-radius: 40px;
+            padding: 40px;
+            margin: 100px 0 50px;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.3);
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .level-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .timer-box {
+            background: #f8f9fa;
+            padding: 15px 35px;
+            border-radius: 60px;
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            box-shadow: 0 10px 20px -8px rgba(102,126,234,0.3);
+            border: 2px solid #667eea;
+        }
+        
+        .timer-box i {
+            color: #ff6b6b;
+            margin-right: 10px;
+        }
+        
+        .progress {
+            height: 12px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+        }
+        
+        .question-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin: 30px 0;
+            line-height: 1.4;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .option-item {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .option-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -8px rgba(102,126,234,0.3);
+        }
+        
+        .option-item.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .option-item.correct {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .option-item.wrong {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            color: white;
+        }
+        
+        .option-letter {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        
+        .btn-back {
+            background: #f8f9fa;
+            color: #666;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -8px #667eea;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-brain"></i> QUIZZLES
+            </a>
+        </div>
+    </nav>
+
+    <!-- Quiz Container -->
+    <div class="container">
+        <div class="quiz-container">
+            <!-- Quiz Header -->
+            <div class="quiz-header">
+                <span class="level-badge" id="levelDisplay">
+                    <i class="fas fa-tag me-2"></i>Easy Level
+                </span>
+                <div class="timer-box" id="timerContainer">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span id="timer">60s</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress">
+                <div class="progress-bar" id="progressBar" style="width: 10%;"></div>
+            </div>
+
+            <!-- Question Counter -->
+            <p class="text-muted mb-2" id="questionCounter">Question 1 of 10</p>
+
+            <!-- Question Area -->
+            <div id="questionArea">
+                <h2 class="question-text" id="question">What is the capital city of France?</h2>
+                
+                <div class="options-grid" id="optionsGrid">
+                    <!-- Options will be loaded here -->
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="nav-buttons">
+                    <button class="btn-back" onclick="goBack()">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </button>
+                    <button class="btn-submit" onclick="submitAnswer()">
+                        Submit <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Quiz Data (Questions) -->
+    <script src="js/quiz-data.js"></script>
+    
+    <!-- Quiz Logic -->
+    <script>
+        // Quiz state
+        let currentQuestionIndex = 0;
+        let timerInterval;
+        let timeLeft = 60;
+        let selectedOption = null;
+        let currentScore = 0;
+        let selectedLevel = 'easy';
+        let totalQuestions = 10;
+        let questions = [];
+
+        // Initialize quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuiz();
+        });
+
+        function initializeQuiz() {
+            // Get selected level
+            selectedLevel = localStorage.getItem('quizLevel') || 'easy';
+            
+            // Update level display
+            document.getElementById('levelDisplay').innerHTML = 
+                '<i class="fas fa-tag me-2"></i>' + 
+                selectedLevel.charAt(0).toUpperCase() + selectedLevel.slice(1) + ' Level';
+            
+            // Get questions
+            questions = quizQuestions[selectedLevel];
+            totalQuestions = questions.length;
+            
+            // Reset
+            currentQuestionIndex = 0;
+            currentScore = 0;
+            
+            // Load first question
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            // Clear timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Get current question
+            const question = questions[currentQuestionIndex];
+            
+            // Update counter
+            document.getElementById('questionCounter').textContent = 
+                `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+            
+            // Update progress
+            const progress = ((currentQuestionIndex) / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Display question
+            document.getElementById('question').textContent = question.question;
+            
+            // Display options
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-item';
+                optionDiv.innerHTML = `
+                    <span class="option-letter">${letters[index]}</span>
+                    <span>${option}</span>
+                `;
+                optionDiv.onclick = function() { selectOption(index); };
+                optionDiv.id = `option-${index}`;
+                optionsGrid.appendChild(optionDiv);
+            });
+            
+            // Reset
+            selectedOption = null;
+            timeLeft = 60;
+            document.getElementById('timer').textContent = timeLeft + 's';
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft + 's';
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').style.color = '#ef4444';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Time\'s up! Moving to next question.');
+                    submitAnswer();
+                }
+            }, 1000);
+        }
+
+        function selectOption(index) {
+            // Remove selected class from all
+            document.querySelectorAll('.option-item').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class
+            document.getElementById(`option-${index}`).classList.add('selected');
+            selectedOption = index;
+        }
+
+        function submitAnswer() {
+            if (selectedOption === null) {
+                alert('Please select an answer!');
+                return;
+            }
+            
+            clearInterval(timerInterval);
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const isCorrect = (selectedOption === currentQuestion.correct);
+            
+            // Show correct/wrong
+            document.querySelectorAll('.option-item').forEach((opt, index) => {
+                if (index === currentQuestion.correct) {
+                    opt.classList.add('correct');
+                } else if (index === selectedOption && !isCorrect) {
+                    opt.classList.add('wrong');
+                }
+            });
+            
+            if (isCorrect) {
+                currentScore++;
+            }
+            
+            setTimeout(() => {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                } else {
+                    localStorage.setItem('quizScore', currentScore);
+                    localStorage.setItem('totalQuestions', questions.length);
+                    window.location.href = 'result.html';
+                }
+            }, 1000);
+        }
+
+        function goBack() {
+            if (confirm('Quit quiz? Your progress will be lost.')) {
+                clearInterval(timerInterval);
+                window.location.href = 'level-selection.html';
+            }
+        }
+    </script>
+</body>
+</html>

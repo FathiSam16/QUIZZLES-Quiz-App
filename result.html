@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results - QUIZZLES</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* Additional Result Page Styles */
+        .result-container {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 80px 0;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 50px;
+            padding: 60px 50px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #ff6b6b, #fbbf24);
+        }
+        
+        .trophy-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .result-card h1 {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .score-circle {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            border: 8px solid rgba(102,126,234,0.2);
+            box-shadow: 0 20px 40px -10px #667eea;
+        }
+        
+        .score-circle h2 {
+            color: white;
+            font-size: 56px;
+            font-weight: 800;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .performance-badge {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-radius: 60px;
+            display: inline-block;
+            font-weight: 700;
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.1);
+            border: 2px solid #e0e0e0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px -8px rgba(102,126,234,0.3);
+        }
+        
+        .stat-box i {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-box:nth-child(1) i { color: #10b981; }
+        .stat-box:nth-child(2) i { color: #ef4444; }
+        .stat-box:nth-child(3) i { color: #f59e0b; }
+        
+        .stat-box .big-number {
+            font-size: 42px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .stat-box .stat-label {
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .medals-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .medal {
+            text-align: center;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+        
+        .medal.unlocked {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .medal-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 28px;
+            color: white;
+        }
+        
+        .medal.gold .medal-icon {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 0 30px #fbbf24;
+        }
+        
+        .medal.silver .medal-icon {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            box-shadow: 0 0 30px #94a3b8;
+        }
+        
+        .medal.bronze .medal-icon {
+            background: linear-gradient(135deg, #cd7f32, #b87333);
+            box-shadow: 0 0 30px #cd7f32;
+        }
+        
+        .medal p {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .quote-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 25px;
+            border-radius: 30px;
+            margin: 40px 0;
+            color: white;
+            font-style: italic;
+            font-size: 18px;
+            box-shadow: 0 20px 30px -10px #667eea;
+        }
+        
+        .quote-box i {
+            color: #ffd93d;
+            margin: 0 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .btn-retry {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 45px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 20px 30px -10px #667eea;
+        }
+        
+        .btn-retry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 35px -8px #667eea;
+            color: white;
+        }
+        
+        .btn-home {
+            background: #f8f9fa;
+            color: #333;
+            padding: 15px 45px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-home:hover {
+            background: #e0e0e0;
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .result-card {
+                padding: 30px 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .medals-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .score-circle {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .score-circle h2 {
+                font-size: 42px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-brain"></i> QUIZZLES
+            </a>
+        </div>
+    </nav>
+
+    <!-- Results Section -->
+    <section class="result-container">
+        <div class="container">
+            <div class="result-card">
+                <!-- Trophy Icon -->
+                <div class="trophy-icon">
+                    <i class="fas fa-trophy" style="color: #fbbf24;"></i>
+                </div>
+                
+                <!-- Title -->
+                <h1>Quiz Completed!</h1>
+                <p class="text-muted">Here's how you performed</p>
+                
+                <!-- Score Circle -->
+                <div class="score-circle">
+                    <h2 id="scoreDisplay">0/10</h2>
+                </div>
+                
+                <!-- Performance Badge -->
+                <div class="performance-badge" id="performanceText">
+                    Great Job! 🌟
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="big-number" id="correctCount">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-times-circle"></i>
+                        <div class="big-number" id="wrongCount">0</div>
+                        <div class="stat-label">Wrong</div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-chart-line"></i>
+                        <div class="big-number" id="percentageDisplay">0%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                </div>
+                
+                <!-- Medals Achievement -->
+                <div class="medals-row">
+                    <div class="medal gold" id="goldMedal">
+                        <div class="medal-icon"><i class="fas fa-crown"></i></div>
+                        <p>Gold</p>
+                        <small class="text-muted">80%+</small>
+                    </div>
+                    <div class="medal silver" id="silverMedal">
+                        <div class="medal-icon"><i class="fas fa-medal"></i></div>
+                        <p>Silver</p>
+                        <small class="text-muted">60%+</small>
+                    </div>
+                    <div class="medal bronze" id="bronzeMedal">
+                        <div class="medal-icon"><i class="fas fa-star"></i></div>
+                        <p>Bronze</p>
+                        <small class="text-muted">40%+</small>
+                    </div>
+                </div>
+                
+                <!-- Inspirational Quote -->
+                <div class="quote-box">
+                    <i class="fas fa-quote-left"></i>
+                    <span id="quoteText">The expert in anything was once a beginner.</span>
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="level-selection.html" class="btn-retry">
+                        <i class="fas fa-redo me-2"></i>Play Again
+                    </a>
+                    <a href="index.html" class="btn-home">
+                        <i class="fas fa-home me-2"></i>Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 QUIZZLES. All rights reserved. | ICT/2023/110 & ICT/2023/111 | Index: 6090 & 6091</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Results Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            displayResults();
+        });
+
+        function displayResults() {
+            // Get score from localStorage
+            const score = parseInt(localStorage.getItem('quizScore')) || 0;
+            const total = parseInt(localStorage.getItem('totalQuestions')) || 10;
+            const wrong = total - score;
+            const percentage = Math.round((score / total) * 100);
+
+            // Update display
+            document.getElementById('scoreDisplay').textContent = `${score}/${total}`;
+            document.getElementById('correctCount').textContent = score;
+            document.getElementById('wrongCount').textContent = wrong;
+            document.getElementById('percentageDisplay').textContent = `${percentage}%`;
+
+            // Update medals and messages based on score
+            const goldMedal = document.getElementById('goldMedal');
+            const silverMedal = document.getElementById('silverMedal');
+            const bronzeMedal = document.getElementById('bronzeMedal');
+            const performanceText = document.getElementById('performanceText');
+            const quoteText = document.getElementById('quoteText');
+
+            // Remove any existing unlocked class
+            goldMedal.classList.remove('unlocked');
+            silverMedal.classList.remove('unlocked');
+            bronzeMedal.classList.remove('unlocked');
+
+            if (percentage >= 80) {
+                goldMedal.classList.add('unlocked');
+                performanceText.innerHTML = '🏆 Excellent! You\'re a Genius! 🏆';
+                quoteText.textContent = 'Great job! Your knowledge is impressive!';
+            } else if (percentage >= 60) {
+                silverMedal.classList.add('unlocked');
+                performanceText.innerHTML = '🥈 Good Job! Well Played! 🥈';
+                quoteText.textContent = 'Good effort! Keep learning and improving!';
+            } else if (percentage >= 40) {
+                bronzeMedal.classList.add('unlocked');
+                performanceText.innerHTML = '🥉 Nice Try! Keep Practicing! 🥉';
+                quoteText.textContent = 'Practice makes perfect! Try again!';
+            } else {
+                performanceText.innerHTML = '💪 Don\'t Give Up! Try Again! 💪';
+                quoteText.textContent = 'Every expert was once a beginner!';
+            }
+        }
+    </script>
+</body>
+</html>

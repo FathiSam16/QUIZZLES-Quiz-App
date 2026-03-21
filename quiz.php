@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -374,7 +382,7 @@
                 } else {
                     localStorage.setItem('quizScore', currentScore);
                     localStorage.setItem('totalQuestions', questions.length);
-                    window.location.href = 'result.html';
+                    window.location.href = 'result.php';
                 }
             }, 1000);
         }
